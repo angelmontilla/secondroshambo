@@ -1,0 +1,8 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}Second RoShamBo
+${licensePrefix}Creado el ${date} a las ${time}
+<#if licenseLast??>
+${licenseLast}
+</#if>
