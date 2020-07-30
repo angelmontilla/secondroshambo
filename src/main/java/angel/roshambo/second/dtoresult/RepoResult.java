@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
@@ -43,27 +44,14 @@ public class RepoResult {
      * <b>getCounts</b> totals of first, second winners and draws.
      * @return DtoAcumulate with totals
      */
-    public DtoAcumulate getCounts() {
-        DtoAcumulate res = new DtoAcumulate();
-        long total;
-        
-        Map<ResultEnum, Long> counts = this.storing.stream().parallel().
-                collect(Collectors.groupingBy(DtoResult::getResult, Collectors.counting()));
-        
-        counts.forEach((k,v) -> {
-                    if (k==ResultEnum.FIRST)
-                            res.setTotalFirstWin(v);
-                    if (k==ResultEnum.SECOND)
-                            res.setTotalSecondWin(v);
-                    if (k==ResultEnum.DRAW)
-                            res.setTotalDraws(v);
-                });
-        
-        total = res.getTotalDraws()+res.getTotalFirstWin()+res.getTotalSecondWin();
-        
-        res.setTotalRounds(total);
-        
-        return res;
+    public Map<ResultEnum, Long> getCounts() {   
+        return this.storing
+                .stream()
+                .parallel()
+                .collect(Collectors
+                            .groupingBy(DtoResult::getResult, Collectors.counting())
+                );
+
     }
     
     /**
@@ -71,9 +59,9 @@ public class RepoResult {
      * @param id - UUID for user
      * @return Flux of DtoResult stream
      */
-    public Flux<DtoResult> getRounds(UUID id) {
-        return Flux.fromStream(this.storing.stream().
-                                filter(c -> c.getId().equals(id)).
-                                sorted(Comparator.comparing(DtoResult::getDate)));
+    public Stream<DtoResult> getRounds(UUID id) {
+        return this.storing.stream()
+                .filter(c -> c.getId().equals(id))
+                .sorted(Comparator.comparing(DtoResult::getDate));
     }
 }

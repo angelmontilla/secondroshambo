@@ -4,7 +4,7 @@
  */
 package angel.roshambo.second.dtoresult;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -36,13 +36,11 @@ public class ControllerResult {
     @GetMapping("/playstart")
     @ResponseBody
     public String theInit(@RequestParam(value="id", required = false) String Id) {
-        String res;
+        String res = Id;
         
         if (Id == null || Id.isEmpty()) {
             res = theService.getNewUUID();
-        } else {
-            res = Id;
-        }
+        } 
         
         return res;
     }
@@ -57,9 +55,7 @@ public class ControllerResult {
     @GetMapping("/playround/{Id}")
     @ResponseBody
     public Mono<DtoResult> theRound(@RequestParam(value="r1", required = true) String firstMove, @RequestParam(value="r2", defaultValue = "Rock") String secondMove, @PathVariable("Id") String Id) {
-        Mono<DtoResult> res;
-        
-        return res;
+        return theService.makeMove(Id, firstMove, secondMove);
     }
     
     /**
@@ -70,9 +66,7 @@ public class ControllerResult {
     @GetMapping("/scores/{Id}")
     @ResponseBody
     public Flux<DtoResult> theScores(@PathVariable("Id") String Id) {
-        Flux<DtoResult> res;
-        
-        return res;
+        return theService.getRounds(Id);
     }
     
     /**
