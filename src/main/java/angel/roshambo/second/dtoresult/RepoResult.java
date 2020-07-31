@@ -2,7 +2,6 @@
 package angel.roshambo.second.dtoresult;
 
 
-import angel.roshambo.second.dtoacumulate.DtoAcumulate;
 import angel.roshambo.second.enums.ResultEnum;
 import java.util.Comparator;
 import java.util.Map;
@@ -11,10 +10,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
 
 /**
  * <strong>RepoResult</strong> Repository for moves storing
+ * <p>It's a component (singleton)<br/>it allows insert, counting and <br>
+ * getting scores for an identified user</p>
  * @author Angel
  */
 @Component
@@ -55,13 +55,22 @@ public class RepoResult {
     }
     
     /**
-     * <b>getDounds</b> getRounds from an User
+     * <b>getScores</b> getScores for an User
      * @param id - UUID for user
      * @return Flux of DtoResult stream
      */
-    public Stream<DtoResult> getRounds(UUID id) {
+    public Stream<DtoResult> getScores(UUID id) {
         return this.storing.stream()
                 .filter(c -> c.getId().equals(id))
                 .sorted(Comparator.comparing(DtoResult::getDate));
+    }
+    
+    /**
+     * <strong>clear</strong>
+     * <p>Empty move contents</p>
+     * <p>For testing only</p>
+     */
+    public void clear() {
+        this.storing.clear();
     }
 }

@@ -127,7 +127,7 @@ public class ServiceResult {
      * @return Flux of DtoResult
      */
     public Flux<DtoResult> getRounds(String id) {
-        return Flux.fromStream(theRepository.getRounds(UUID.fromString(id)));
+        return Flux.fromStream(theRepository.getScores(UUID.fromString(id)));
     }
     
 }
