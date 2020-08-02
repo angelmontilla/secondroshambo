@@ -118,6 +118,66 @@ public class RepoResultTest {
     }
     
     /**
+     * Test of insertMove method, of class RepoResult.
+     */
+    @Test
+    public void testGetScoresFromNull() {
+        System.out.println("getScores");
+        
+        this.repoResult.clear();
+        
+        UUID id[] = new UUID[10];
+        
+        for (int i=0;i<10;i++)
+            id[i]=UUID.randomUUID();
+        
+        DtoResult dtoResult = null;
+        Random r1 = new Random();    
+        
+        IWinnerStrategy rockStrategy = new RockStrategy();
+        IWinnerStrategy paperStrategy = new RockStrategy();
+        IWinnerStrategy scissStrategy = new ScissorsStrategy();
+        WinerStrategy strategy = new WinerStrategy();
+        
+        int countU1=0;
+        
+        for (int i=0;i<1000;i++) 
+        {
+            int rand = r1.nextInt(10);
+            
+            if (rand==0)
+                countU1++;
+            
+            MoveEnum f = MoveEnum.values()[r1.nextInt(2)];
+            MoveEnum s = MoveEnum.values()[r1.nextInt(2)];
+            
+            if (f==MoveEnum.ROCK)
+                strategy.Context(rockStrategy);
+            if (f==MoveEnum.PAPER)
+                strategy.Context(paperStrategy);
+            if (f==MoveEnum.SCISSORS)
+                strategy.Context(scissStrategy);
+            
+            if (s==MoveEnum.ROCK)
+                dtoResult = new DtoResult(id[rand],
+                            new java.util.Date(System.currentTimeMillis()),
+                            f, s, ResultEnum.valueOf(strategy.executeStrategy("ROCK")));
+            if (s==MoveEnum.PAPER)
+                dtoResult = new DtoResult(id[rand],
+                            new java.util.Date(System.currentTimeMillis()),
+                            f, s, ResultEnum.valueOf(strategy.executeStrategy("PAPER")));
+            if (s==MoveEnum.SCISSORS)
+                dtoResult = new DtoResult(id[rand],
+                            new java.util.Date(System.currentTimeMillis()),
+                            f, s, ResultEnum.valueOf(strategy.executeStrategy("SCISSORS")));
+            
+            this.repoResult.insertMove(dtoResult);                        
+        }
+        
+        assertNotEquals(this.repoResult.getScores(null).count(),countU1);        
+    }    
+    
+    /**
      * Test of getCounts method, of class RepoResult.
      */
     @Test

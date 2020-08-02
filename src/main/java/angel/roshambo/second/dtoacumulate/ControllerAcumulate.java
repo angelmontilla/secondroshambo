@@ -30,7 +30,7 @@ public class ControllerAcumulate {
     
     // (1) Spring MVC annotation
     @GetMapping(value = "/acumulate", produces = "text/event-stream;charset=UTF-8")
-    public Flux<DtoAcumulate> getWeatherInfo() {
+    public Flux<DtoAcumulate> getScoreInfo() {
         return theBridge;
     }
     

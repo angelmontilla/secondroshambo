@@ -5,6 +5,7 @@
 package angel.roshambo.second.dtoresult;
 
 import angel.roshambo.second.dtoacumulate.DtoAcumulate;
+import angel.roshambo.second.dtouser.DtoUser;
 import angel.roshambo.second.enums.MoveEnum;
 import angel.roshambo.second.enums.ResultEnum;
 import angel.roshambo.second.winerstrategy.IWinnerStrategy;
@@ -35,6 +36,24 @@ public class ServiceResult {
      */
     public String getNewUUID() {
         return UUID.randomUUID().toString();
+    }
+    
+    /**
+     * <b>createUser</b> Creating user in game
+     * @param id Id from user
+     * @return Mono of dtoUser
+     */
+    public Mono<DtoUser> createUser(String id) {
+        DtoUser dtoUser = new DtoUser();
+
+        if (id == null || id.length()<36) {
+            dtoUser.setId(UUID.randomUUID());
+        } else {
+            dtoUser.setId(null);
+        }
+        
+        return Mono.just(dtoUser);
+        
     }
     
     /**
@@ -127,7 +146,15 @@ public class ServiceResult {
      * @return Flux of DtoResult
      */
     public Flux<DtoResult> getRounds(String id) {
-        return Flux.fromStream(theRepository.getScores(UUID.fromString(id)));
+        Flux<DtoResult> response;
+        
+        if (id != null) {
+            response = Flux.fromStream(theRepository.getScores(UUID.fromString(id)));
+        } else {
+            response = Flux.empty();
+        }
+        
+        return response;
     }
     
 }

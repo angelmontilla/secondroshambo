@@ -49,7 +49,7 @@ public class RepoResult {
                 .stream()
                 .parallel()
                 .collect(Collectors
-                            .groupingBy(DtoResult::getResult, Collectors.counting())
+                            .groupingBy(DtoResult -> DtoResult.getResult(), Collectors.counting())
                 );
 
     }
@@ -60,9 +60,20 @@ public class RepoResult {
      * @return Flux of DtoResult stream
      */
     public Stream<DtoResult> getScores(UUID id) {
-        return this.storing.stream()
+        Stream<DtoResult> score;
+        
+        if (id != null) {
+        
+            score =  this.storing.stream()
                 .filter(c -> c.getId().equals(id))
                 .sorted(Comparator.comparing(DtoResult::getDate));
+        } else {
+            score =  this.storing.stream()
+                .filter(c -> c.getId().toString().equals(""))
+                .sorted(Comparator.comparing(DtoResult::getDate));
+        }
+        
+        return score;
     }
     
     /**

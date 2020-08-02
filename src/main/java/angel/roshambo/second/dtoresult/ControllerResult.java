@@ -4,6 +4,8 @@
  */
 package angel.roshambo.second.dtoresult;
 
+import angel.roshambo.second.dtoacumulate.DtoAcumulate;
+import angel.roshambo.second.dtouser.DtoUser;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.http.HttpStatus;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -33,16 +34,10 @@ public class ControllerResult {
      * @param Id if given user just exists
      * @return String User UUID as string
      */
-    @GetMapping("/playstart")
+    @GetMapping({"/playstart/{Id}", "/playstart"})
     @ResponseBody
-    public String theInit(@RequestParam(value="id", required = false) String Id) {
-        String res = Id;
-        
-        if (Id == null || Id.isEmpty()) {
-            res = theService.getNewUUID();
-        } 
-        
-        return res;
+    public Mono<DtoUser> theInit(@PathVariable(name = "Id", required = false) String Id) {
+        return theService.createUser(Id);
     }
     
     /**
@@ -52,9 +47,9 @@ public class ControllerResult {
      * @param Id String with UUID from user
      * @return Mono of DtoResult with play result
      */
-    @GetMapping("/playround/{Id}")
+    @GetMapping("/playround/{Id}/{move1}/{move2}")
     @ResponseBody
-    public Mono<DtoResult> theRound(@RequestParam(value="r1", required = true) String firstMove, @RequestParam(value="r2", defaultValue = "Rock") String secondMove, @PathVariable("Id") String Id) {
+    public Mono<DtoResult> theRound(@PathVariable("Id") String Id, @PathVariable("move1") String firstMove, @PathVariable("move2") String secondMove) {
         return theService.makeMove(Id, firstMove, secondMove);
     }
     
@@ -63,11 +58,28 @@ public class ControllerResult {
      * @param Id UUID that represents the user
      * @return Flux of DtoResults for subscribe
      */
-    @GetMapping("/scores/{Id}")
+    @GetMapping({"/scores/{Id}", "/scores"} )
     @ResponseBody
-    public Flux<DtoResult> theScores(@PathVariable("Id") String Id) {
-        return theService.getRounds(Id);
+    public Flux<DtoResult> theScores(@PathVariable(name= "Id", required = false) String Id) {
+        Flux<DtoResult> response;
+        
+        if (Id != null) 
+            response = theService.getRounds(Id);
+        else
+            response = Flux.empty();
+        
+        return response;
     }
+    
+    /**
+     * <b>theTotalAccount</b> Gives total account
+     * @return Mono of DtoAcumulate for subscribe
+     */
+    @GetMapping("/acumulates")
+    @ResponseBody
+    public Mono<DtoAcumulate> theAcmulate() {        
+        return Mono.just(theService.getTotalCounts());
+    }    
     
     /**
      * <strong>handleError</strong>
